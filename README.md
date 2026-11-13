@@ -25,6 +25,7 @@ Requisitos: macOS 14 (Sonoma) o posterior, Apple Silicon o Intel. Colima y el cl
 ## Qué hace
 
 - **Colima**: estado del perfil (CPU, memoria, disco, arquitectura), arrancar, parar y reiniciar, con la salida de `colima` en directo. Si tienes varios perfiles, eliges cuál usar.
+- **Red de Colima**: por perfil, red compartida (NAT, con o sin IP propia para la VM) o en puente con una interfaz del Mac, para que la VM tenga una IP de tu red local y los demás dispositivos lleguen a los contenedores (mDNS y multicast incluidos). Se guarda en `colima.yaml` y reinicia el perfil, pidiendo confirmación. La primera vez que usas el modo puente, Colima pide la contraseña de administrador en Terminal.
 - **Stacks**: tus proyectos de Docker Compose agrupados, con cuántos servicios están en marcha y sus puertos. Arrancar (`up -d`), parar, reiniciar, bajar (`down`), descargar imágenes (`pull`), abrir la carpeta en Finder o en una terminal.
 - **Contenedores**: estado y salud, puertos (clic para abrir `localhost:<puerto>`), CPU y memoria en directo. Arrancar, parar, reiniciar, pausar, forzar parada y eliminar.
 - **Terminal dentro del contenedor**: abre `docker exec -it` en Terminal, iTerm o Ghostty, con bash si el contenedor lo tiene y si no sh.
