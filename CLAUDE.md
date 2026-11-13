@@ -13,6 +13,7 @@ open build/Colimy.app
 ```
 
 - Requisitos: macOS 14+, Xcode 16+. `Package.swift` usa tools 5.10 (modo Swift 5).
+- Iconos: fuentes en `brand/icon.svg` (app, llama de Colima en una tesela) y `brand/menubar.svg` (plantilla de la barra). `./scripts/make-icon.sh` genera `Resources/AppIcon.icns` y `Resources/MenuBarIcon*.png`, que `build-app.sh` copia al bundle. Sin bundle (`swift run`) la barra usa un SF Symbol.
 - `--snapshot` (solo en debug, `Snapshot.swift`) guarda una imagen de la ventana y sale: sirve para revisar la interfaz sin permiso de grabación de pantalla.
 - La copia instalada vive en `/Applications/Colimy.app`; la de `build/` tiene versión 1.0.0 (su actualizador siempre ve versiones nuevas). Cierra una antes de abrir otra.
 - No hay tests. Verificar compilando (`swift build` y `swift build --arch x86_64`) y lanzando la app.
@@ -65,6 +66,7 @@ Igual que Wallpy: `main` protegida, cambios por PR con squash y comprobación `b
 - **`NSHostingController` encoge la ventana**: `sizingOptions = []` y `setContentSize` después. El nombre de autosave del marco se pone **después** de `setFrameUsingName`, o guarda el marco inicial y la ventana sale al tamaño mínimo.
 - `main.swift` envuelve el arranque en `MainActor.assumeIsolated` porque `AppDelegate` es `@MainActor`.
 - Las apps abiertas desde Finder tienen un PATH mínimo: `ExternalTool.childPath` añade Homebrew para que `colima` encuentre `limactl` y `docker` su plugin de compose.
+- **`colima start --network-…` no cambia un perfil que ya existe**: las opciones solo valen al crearlo. La sección Red escribe `network:` en `~/.colima/<perfil>/colima.yaml` y luego `colima restart`/`start`. El modo puente (y la IP propia con QEMU) usa `socket_vmnet` y la primera vez pide `sudo`: sin terminal falla, por eso se abre en Terminal. Al crear un perfil, Colima cambia el contexto activo de Docker.
 - Leer stdout/stderr con lecturas bloqueantes en hilos propios y esperar a EOF antes de dar el proceso por terminado; con `readabilityHandler` se perdía la última línea.
 
 ## Pruebas manuales

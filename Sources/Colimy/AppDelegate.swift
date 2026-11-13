@@ -93,8 +93,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, NSWind
     }
 
     private func updateStatusIcon(running: Bool, busy: Bool) {
-        let symbol = busy ? "shippingbox.and.arrow.backward" : (running ? "shippingbox.fill" : "shippingbox")
-        let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "Colimy")
+        // The llama template image lives in the app bundle (build-app.sh); `swift run` has no bundle,
+        // so fall back to an SF Symbol there.
+        let image = NSImage(named: "MenuBarIcon")
+            ?? NSImage(systemSymbolName: running ? "shippingbox.fill" : "shippingbox", accessibilityDescription: "Colimy")
+        image?.size = NSSize(width: 18, height: 18)
         image?.isTemplate = true
         statusItem.button?.image = image
         statusItem.button?.appearsDisabled = !running && !busy

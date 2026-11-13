@@ -254,6 +254,20 @@ final class DockerStore: ObservableObject {
     func isBusy(_ container: Container) -> Bool { busy.contains(container.id) }
 
     func colima(_ action: ColimaAction, profile name: String? = nil) async {
+        await runColima(action, profile: name) { name, onLine in
+            try await Colima.run(action, profile: name, onLine: onLine)
+        }
+    }
+
+    /// Restarts `profile` (or starts it, if stopped) with new network settings.
+    func applyNetwork(_ network: ColimaNetwork, profile: ColimaProfile) async {
+        await runColima(.network, profile: profile.name) { name, onLine in
+            try await Colima.applyNetwork(network, profile: name, running: profile.isRunning, onLine: onLine)
+        }
+    }
+
+    private func runColima(_ action: ColimaAction, profile name: String?,
+                           operation: (String, @escaping @Sendable (String) -> Void) async throws -> Void) async {
         guard colimaAction == nil else { return }
         let name = name ?? profile?.name ?? settings.colimaProfile
         colimaAction = action
@@ -264,7 +278,7 @@ final class DockerStore: ObservableObject {
             containers = []
         }
         do {
-            try await Colima.run(action, profile: name) { line in
+            try await operation(name) { [weak self] line in
                 let text = stripANSI(line)
                 Task { @MainActor [weak self] in
                     guard let self else { return }
@@ -281,6 +295,8 @@ final class DockerStore: ObservableObject {
     }
 
     func clearColimaOutput() { colimaOutput = [] }
+
+    func reportError(_ title: String, _ error: Error) { report(title, error) }
 
     private func report(_ title: String, _ error: Error) {
         if case ToolError.cancelled = error { return }
@@ -299,6 +315,7 @@ private extension ColimaAction {
         case .start: return tr("No se pudo arrancar Colima")
         case .stop: return tr("No se pudo parar Colima")
         case .restart: return tr("No se pudo reiniciar Colima")
+        case .network: return tr("No se pudo aplicar la configuración de red")
         }
     }
 }
