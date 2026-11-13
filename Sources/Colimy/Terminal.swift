@@ -19,12 +19,12 @@ enum TerminalLauncher {
     }
 
     @MainActor
-    static func open(title: String, host: String, command: [String], directory: String? = nil) {
+    static func open(title: String, host: String?, command: [String], directory: String? = nil) {
         let script = """
         #!/bin/zsh
         printf '\\033]0;%s\\007' \(quote(title))
         export PATH=\(quote(ExternalTool.childPath))
-        export DOCKER_HOST=\(quote(host))
+        \(host.map { "export DOCKER_HOST=\(quote($0))" } ?? "")
         \(directory.map { "cd \(quote($0)) || true" } ?? "")
         clear
         exec \(command.map(quote).joined(separator: " "))
