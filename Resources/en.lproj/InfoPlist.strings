@@ -1,0 +1,1 @@
+"NSLocalNetworkUsageDescription" = "Colimy starts Colima, and its containers need to reach services on your local network (databases, NAS, printers…).";

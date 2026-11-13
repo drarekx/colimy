@@ -67,6 +67,7 @@ Igual que Wallpy: `main` protegida, cambios por PR con squash y comprobación `b
 - `main.swift` envuelve el arranque en `MainActor.assumeIsolated` porque `AppDelegate` es `@MainActor`.
 - Las apps abiertas desde Finder tienen un PATH mínimo: `ExternalTool.childPath` añade Homebrew para que `colima` encuentre `limactl` y `docker` su plugin de compose.
 - **`colima start --network-…` no cambia un perfil que ya existe**: las opciones solo valen al crearlo. La sección Red escribe `network:` en `~/.colima/<perfil>/colima.yaml` y luego `colima restart`/`start`. El modo puente (y la IP propia con QEMU) usa `socket_vmnet` y la primera vez pide `sudo`: sin terminal falla, por eso se abre en Terminal. Al crear un perfil, Colima cambia el contexto activo de Docker.
+- **Red local de macOS**: la VM de Colima arrancada desde Colimy cuenta como Colimy para el permiso de Red local; sin `NSLocalNetworkUsageDescription` en `Info.plist` (traducido en `Resources/*.lproj/InfoPlist.strings`) los contenedores no llegan a la LAN.
 - Leer stdout/stderr con lecturas bloqueantes en hilos propios y esperar a EOF antes de dar el proceso por terminado; con `readabilityHandler` se perdía la última línea.
 
 ## Pruebas manuales
